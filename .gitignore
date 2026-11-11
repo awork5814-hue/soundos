@@ -1,5 +1,8 @@
 venv/
 __pycache__/
 *.pyc
-model/
-.cache/
+models_cache.json
+.env
+api_key.json
+PROJECT_GUIDE.txt 
+old_main_project
