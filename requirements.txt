@@ -1,0 +1,5 @@
+google-genai
+sounddevice
+numpy
+arabic-reshaper
+python-bidi
