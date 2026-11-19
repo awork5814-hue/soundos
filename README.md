@@ -19,32 +19,6 @@
 | **`gui.py`** | واجهة المستخدم الرسومية (حالياً `Tkinter` وجاري نقلها إلى `Flask`). |
 | **`requirements.txt`** | قائمة المكتبات البرمجية المطلوبة لتشغيل المشروع. |
 
-## 🔄 مسار البيانات ورحلة الأمر الصوتي (Audio & Data Workflow)
-
-يمر الصوت منذ لحظة تسجيله وحتى تنفيذ الأمر على النظام بـ **5 مراحل متتالية** تضمن السرعة، الخصوصية، والأمان:
-
-1. **الالتقاط في الذاكرة (`audio_recorder.py`):** يُسجَّل الصوت من المايكروفون (`16kHz, Mono`) ويُحوَّل إلى بايتات `WAV` داخل الـ **RAM** مباشرةً دون كتابة أي ملفات مؤقتة على القرص الصلب.
-2. **فحص سياق البيئة (`context_scanner.py`):** بالتوازي، يجمع النظام أسماء ومسارات الملفات والمجلدات في النطاق المسموح فقط (`Metadata Only`) دون فتح أي ملف لحماية الخصوصية.
-3. **التحليل الذكي (`ai_engine.py`):** تُرسَل بايتات الصوت وخريطة الأسماء إلى **Google Gemini API** (مع نظام التبديل التلقائي بين الموديلات) لاستخراج 4 حقول: `STATUS`، `TRANSCRIPT`، `INTENT`، و `COMMAND`.
-4. **التحقق من التعارض والعرض (`gui.py`):** إذا كان الاسم موجوداً مسبقاً (`STATUS: CONFLICT`) يطلب النظام اسماً بديلاً، أما إذا كان جاهزاً (`READY`) فيُعرض الوصف البشري (`INTENT`) للمستخدم قبل التنفيذ.
-5. **التأمين والتنفيذ (`executor.py`):** يُفحص الأمر ضد الأوامر الخطيرة (`rm -rf`, `mkfs`, `dd`)، ويُحوَّل الحذف العادي (`rm`) تلقائياً إلى سلة المهملات (`gio trash`) قبل التنفيذ في بيئة Ubuntu.
-
-```mermaid
-flowchart TD
-    User(["🎙️ User Speaks (Arabic / English)"]) --> Rec["audio_recorder.py<br/>Record WAV in RAM (No Disk Files)"]
-    User --> Scan["context_scanner.py<br/>Scan File Names Only (Metadata)"]
-    
-    Rec -->|Audio Bytes| AI["ai_engine.py<br/>Google Gemini API + Auto-Fallback"]
-    Scan -->|File Context| AI
-    
-    AI --> Decision{"Check Status"}
-    
-    Decision -->|STATUS: CONFLICT| Conflict["⚠️ Name Already Exists!<br/>Ask user for a new name"]
-    Decision -->|STATUS: READY| Ready["✅ Show Human Intent (INTENT)<br/>Hide Bash unless DEV_MODE=True"]
-    
-    Ready -->|Click Execute| Exec["executor.py<br/>1. Check Dangerous Patterns<br/>2. Convert rm ➔ gio trash"]
-    Exec --> OS(["🐧 Execute in Ubuntu Shell"])
-
 ---
 
 ## 🚀 طريقة التثبيت والتشغيل (Setup & Run)
